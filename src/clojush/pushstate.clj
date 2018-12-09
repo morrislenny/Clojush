@@ -136,8 +136,8 @@
    unless :random is in the types list. This won't include parenthesis-altering
    instructions unless :parentheses is in the types list."
   [types-list]
-  (doseq [[instr instr-fn] @instruction-table]
-    (assert (:stack-types (meta instr-fn)) (format "Instruction %s does not have :stack-types defined in metadata." (name instr))))
+  ;(doseq [[instr instr-fn] @instruction-table]
+    ;(assert (:stack-types (meta instr-fn)) (format "Instruction %s does not have :stack-types defined in metadata." (name instr))))
   (map first
        (filter (fn [[instr instr-fn]]
                  (and (:stack-types (meta instr-fn))
