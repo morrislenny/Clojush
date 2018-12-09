@@ -26,14 +26,14 @@
   genome of the child."
   [argmap]
   (case (:age-combining-function argmap)
-    :max (fn [p1 p2 g] 
-           (max (inc (:age p1)) 
+    :max (fn [p1 p2 g]
+           (max (inc (:age p1))
                 (inc (:age p2))))
-    :min (fn [p1 p2 g] 
-           (min (inc (:age p1)) 
+    :min (fn [p1 p2 g]
+           (min (inc (:age p1))
                 (inc (:age p2))))
-    :average (fn [p1 p2 g] 
-               (average (inc (:age p1)) 
+    :average (fn [p1 p2 g]
+               (average (inc (:age p1))
                         (inc (:age p2))))
     :proportionate (fn [p1 p2 g]
                      (if (= (:age p1) (:age p2))
@@ -89,21 +89,21 @@
   in argmap. Grain sizes should range from 0 to 1. Individuals with smaller
   grain sizes will survive screens of a wider range of sizes."
   ([genome {:keys [random-screen] :as argmap}]
-   (compute-grain-size genome 
-                       {:genome [] :dummy true :age -1} 
-                       {:genome [] :dummy true :age -1} 
+   (compute-grain-size genome
+                       {:genome [] :dummy true :age -1}
+                       {:genome [] :dummy true :age -1}
                        argmap))
   ([genome parent1 {:keys [random-screen] :as argmap}]
-   (compute-grain-size genome 
-                       parent1 
-                       {:genome [] :dummy true :age -1} 
+   (compute-grain-size genome
+                       parent1
+                       {:genome [] :dummy true :age -1}
                        argmap))
   ([genome parent1 parent2 {:keys [random-screen] :as argmap}]
    (if (or (not random-screen)
            (empty? genome))
      1
      (if (some :dummy [parent1 parent2])
-       (if (some #{(:criterion random-screen)} 
+       (if (some #{(:criterion random-screen)}
                  #{:non-zero-genetic-similarity-to-parent})
          1
          0)
@@ -124,7 +124,7 @@
                    (sequence-similarity genome (:genome parent2))))
          ;
          :reproductive-similarity-to-parent
-         (sequence-similarity 
+         (sequence-similarity
            genome
            (produce-child-genome-by-autoconstruction
              genome
@@ -133,7 +133,7 @@
              argmap))
          ;
          :reproductive-difference-from-parent
-         (- 1 (sequence-similarity 
+         (- 1 (sequence-similarity
                 genome
                 (produce-child-genome-by-autoconstruction
                   genome
@@ -195,10 +195,10 @@
   [instr uniform-mutation-tag-gaussian-standard-deviation]
   (let [tagparts (string/split (name instr) #"_")
         tag-num (read-string (last tagparts))
-        new-tag-num (mod (round (perturb-with-gaussian-noise 
+        new-tag-num (mod (round (perturb-with-gaussian-noise
                                   uniform-mutation-tag-gaussian-standard-deviation tag-num))
                          @global-tag-limit)
-        new-instr (symbol (apply str (interpose "_" (concat (butlast tagparts) 
+        new-instr (symbol (apply str (interpose "_" (concat (butlast tagparts)
                                                             (list (str new-tag-num))))))]
     new-instr))
 
@@ -216,29 +216,29 @@
                uniform-mutation-string-char-change-rate maintain-ancestors
                atom-generators genome-representation]
         :as argmap}]
-  (let [uniform-mutation-rate 
+  (let [uniform-mutation-rate
         (random-element-or-identity-if-not-a-collection uniform-mutation-rate)
-        
-        uniform-mutation-constant-tweak-rate 
+
+        uniform-mutation-constant-tweak-rate
         (random-element-or-identity-if-not-a-collection uniform-mutation-constant-tweak-rate)
-        
-        uniform-mutation-float-gaussian-standard-deviation 
+
+        uniform-mutation-float-gaussian-standard-deviation
         (random-element-or-identity-if-not-a-collection uniform-mutation-float-gaussian-standard-deviation)
-        
-        uniform-mutation-int-gaussian-standard-deviation 
+
+        uniform-mutation-int-gaussian-standard-deviation
         (random-element-or-identity-if-not-a-collection uniform-mutation-int-gaussian-standard-deviation)
-        
-        uniform-mutation-tag-gaussian-standard-deviation 
+
+        uniform-mutation-tag-gaussian-standard-deviation
         (random-element-or-identity-if-not-a-collection uniform-mutation-tag-gaussian-standard-deviation)
-        
-        uniform-mutation-string-char-change-rate 
+
+        uniform-mutation-string-char-change-rate
         (random-element-or-identity-if-not-a-collection uniform-mutation-string-char-change-rate)
-    
+
         string-tweak (fn [st]
                        (apply str (map (fn [c]
                                          (if (< (lrand) uniform-mutation-string-char-change-rate)
-                                           (lrand-nth (vec (concat ["\n" "\t"] 
-                                                                   (map (comp str char) 
+                                           (lrand-nth (vec (concat ["\n" "\t"]
+                                                                   (map (comp str char)
                                                                         (range 32 127)))))
                                            c))
                                        st)))
@@ -260,23 +260,23 @@
                                    (tag-gaussian-tweak const
                                                        uniform-mutation-tag-gaussian-standard-deviation)
                                    ;; float
-                                   (float? const) 
-                                   (perturb-with-gaussian-noise 
+                                   (float? const)
+                                   (perturb-with-gaussian-noise
                                     uniform-mutation-float-gaussian-standard-deviation const)
                                    ;; integer
-                                   (integer? const) 
-                                   (round (perturb-with-gaussian-noise 
+                                   (integer? const)
+                                   (round (perturb-with-gaussian-noise
                                            uniform-mutation-int-gaussian-standard-deviation const))
                                    ;; string
-                                   (string? const) 
+                                   (string? const)
                                    (string-tweak const)
                                    ;; boolean
-                                   (or (= const true) (= const false)) 
+                                   (or (= const true) (= const false))
                                    (lrand-nth [true false])
                                    ;; anything else
                                    :else
                                    (case genome-representation
-                                     :plush (:instruction 
+                                     :plush (:instruction
                                              (random-plush-instruction-map atom-generators argmap))
                                      :plushy (random-plushy-instruction atom-generators argmap)))]
                              (case genome-representation
@@ -310,7 +310,7 @@
         instruction-mutator (fn [token]
                               (assoc token
                                 :instruction
-                                (:instruction 
+                                (:instruction
                                   (first (random-plush-genome 1 atom-generators argmap)))))
         token-mutator (fn [token]
                         (if (< (lrand) uniform-mutation-rate)
@@ -331,23 +331,23 @@
 (defn uniform-integer-mutation
   "Uniformly mutates individual. For each integer in the genome, there is
    uniform-mutation-constant-tweak-rate probability of being mutated."
-  [ind {:keys [uniform-mutation-constant-tweak-rate 
+  [ind {:keys [uniform-mutation-constant-tweak-rate
                uniform-mutation-int-gaussian-standard-deviation
                maintain-ancestors atom-generators]
         :as argmap}]
-  (let [uniform-mutation-constant-tweak-rate 
+  (let [uniform-mutation-constant-tweak-rate
         (random-element-or-identity-if-not-a-collection uniform-mutation-constant-tweak-rate)
-        
-        uniform-mutation-int-gaussian-standard-deviation 
+
+        uniform-mutation-int-gaussian-standard-deviation
         (random-element-or-identity-if-not-a-collection uniform-mutation-int-gaussian-standard-deviation)
-        
+
         constant-mutator (fn [token]
                            (let [const (:instruction token)]
                              (if (integer? const)
                                (assoc token
                                  :instruction
-                                 (round (perturb-with-gaussian-noise 
-                                          uniform-mutation-int-gaussian-standard-deviation 
+                                 (round (perturb-with-gaussian-noise
+                                          uniform-mutation-int-gaussian-standard-deviation
                                           const)))
                                token)))
         token-mutator (fn [token]
@@ -369,22 +369,22 @@
 (defn uniform-float-mutation
   "Uniformly mutates individual. For each float in the genome, there is
    uniform-mutation-constant-tweak-rate probability of being mutated."
-  [ind {:keys [uniform-mutation-constant-tweak-rate 
+  [ind {:keys [uniform-mutation-constant-tweak-rate
                uniform-mutation-float-gaussian-standard-deviation
                maintain-ancestors atom-generators]
         :as argmap}]
-  (let [uniform-mutation-constant-tweak-rate 
+  (let [uniform-mutation-constant-tweak-rate
         (random-element-or-identity-if-not-a-collection uniform-mutation-constant-tweak-rate)
-        
+
         uniform-mutation-float-gaussian-standard-deviation
         (random-element-or-identity-if-not-a-collection uniform-mutation-float-gaussian-standard-deviation)
-        
+
         constant-mutator (fn [token]
                            (let [const (:instruction token)]
                              (if (float? const)
                                (assoc token
                                  :instruction
-                                 (perturb-with-gaussian-noise 
+                                 (perturb-with-gaussian-noise
                                    uniform-mutation-float-gaussian-standard-deviation const))
                                token)))
         token-mutator (fn [token]
@@ -410,12 +410,12 @@
   [ind {:keys [uniform-mutation-rate uniform-mutation-tag-gaussian-standard-deviation
                maintain-ancestors atom-generators genome-representation]
         :as argmap}]
-  (let [uniform-mutation-rate 
+  (let [uniform-mutation-rate
         (random-element-or-identity-if-not-a-collection uniform-mutation-rate)
-        
+
         uniform-mutation-tag-gaussian-standard-deviation
         (random-element-or-identity-if-not-a-collection uniform-mutation-tag-gaussian-standard-deviation)
-         
+
         constant-mutator (fn [token]
                            (let [const (case genome-representation
                                          :plush (:instruction token)
@@ -449,23 +449,23 @@
   [ind {:keys [uniform-mutation-rate uniform-mutation-string-char-change-rate
                maintain-ancestors atom-generators]
         :as argmap}]
-  (let [uniform-mutation-rate 
+  (let [uniform-mutation-rate
         (random-element-or-identity-if-not-a-collection uniform-mutation-rate)
-        
+
         uniform-mutation-string-char-change-rate
         (random-element-or-identity-if-not-a-collection uniform-mutation-string-char-change-rate)
-        
+
         string-tweak (fn [st]
                        (apply str (map (fn [c]
                                          (if (< (lrand) uniform-mutation-string-char-change-rate)
-                                           (lrand-nth (vec (concat ["\n" "\t"] 
-                                                                   (map (comp str char) 
+                                           (lrand-nth (vec (concat ["\n" "\t"]
+                                                                   (map (comp str char)
                                                                         (range 32 127)))))
                                            c))
                                        st)))
         constant-mutator (fn [token]
                            (let [const (:instruction token)]
-                             (if (string? const) 
+                             (if (string? const)
                                (assoc token :instruction (string-tweak const))
                                token)))
         token-mutator (fn [token]
@@ -487,13 +487,13 @@
 (defn uniform-boolean-mutation
   "Uniformly mutates individual. For each boolean in the genome, there is
    uniform-mutation-constant-tweak-rate probability of being mutated."
-  [ind {:keys [uniform-mutation-constant-tweak-rate 
+  [ind {:keys [uniform-mutation-constant-tweak-rate
                maintain-ancestors atom-generators]
         :as argmap}]
   (let [uniform-mutation-constant-tweak-rate (random-element-or-identity-if-not-a-collection uniform-mutation-constant-tweak-rate)
         constant-mutator (fn [token]
                            (let [const (:instruction token)]
-                             (if (or (= const true) (= const false)) 
+                             (if (or (= const true) (= const false))
                                (assoc token :instruction (not const))
                                token)))
         token-mutator (fn [token]
@@ -602,7 +602,7 @@ given by uniform-deletion-rate.
   (let [rate (random-element-or-identity-if-not-a-collection uniform-addition-rate)
         new-genome (vec (apply concat
                                (mapv #(if (< (lrand) rate)
-                                        (lshuffle [% 
+                                        (lshuffle [%
                                                    (random-genome-gene
                                                      atom-generators argmap)])
                                         [%])
@@ -619,12 +619,12 @@ given by uniform-deletion-rate.
 ;; uniform addition and deletion (UMAD)
 
 (defn uniform-addition-and-deletion
-  "Returns the individual after two passes of mutation. In the first pass, each element of 
+  "Returns the individual after two passes of mutation. In the first pass, each element of
   its genome may possibly be preceded or followed by a new gene. In the second pass, each
-  element of the genome may possibly be deleted. Probabilities are given by 
+  element of the genome may possibly be deleted. Probabilities are given by
   uniform-addition-and-deletion-rate.
   Works with Plushy genomes."
-  [ind {:keys [uniform-addition-and-deletion-rate maintain-ancestors atom-generators] 
+  [ind {:keys [uniform-addition-and-deletion-rate maintain-ancestors atom-generators]
         :as argmap}]
   (let [addition-rate (random-element-or-identity-if-not-a-collection uniform-addition-and-deletion-rate)
         deletion-rate (if (zero? addition-rate)
@@ -632,7 +632,7 @@ given by uniform-deletion-rate.
                         (/ 1 (+ (/ 1 addition-rate) 1)))
         after-addition (vec (apply concat
                                    (mapv #(if (< (lrand) addition-rate)
-                                            (lshuffle [% 
+                                            (lshuffle [%
                                                        (random-genome-gene
                                                          atom-generators argmap)])
                                             [%])
@@ -681,20 +681,20 @@ given by uniform-deletion-rate.
 ;; uniform combination and deletion
 
 (defn uniform-combination-and-deletion
-  "Returns parent1 after two passes of modification. In the first pass, each element 
+  "Returns parent1 after two passes of modification. In the first pass, each element
   of its genome may possibly be preceded or followed by the corresponding element from
   parent 2's genome (which will wrap if it is too short). In the second pass, each
-  element of the genome may possibly be deleted. Probabilities are given by 
+  element of the genome may possibly be deleted. Probabilities are given by
   uniform-combination-and-deletion-rate.
   Works with Plushy genomes."
-  [parent1 parent2 
+  [parent1 parent2
    {:keys [uniform-combination-and-deletion-rate maintain-ancestors]
     :as argmap}]
   (let [combination-rate (random-element-or-identity-if-not-a-collection uniform-combination-and-deletion-rate)
         deletion-rate (if (zero? combination-rate)
                         0
                         (/ 1 (+ (/ 1 combination-rate) 1)))
-        after-combination (vec 
+        after-combination (vec
                             (apply concat
                                    (mapv (fn [g1 g2]
                                            (if (< (lrand) combination-rate)
@@ -735,7 +735,7 @@ given by uniform-deletion-rate.
                              (<= iteration-budget 0)) ;; looping too long
                        result-genome ;; Return
                        (if (< (lrand) alternation-rate)
-                         (recur (max 0 (+' i (Math/round (*' alignment-deviation 
+                         (recur (max 0 (+' i (Math/round (*' alignment-deviation
                                                              (gaussian-noise-factor)))))
                                 (not use-s1)
                                 result-genome
@@ -764,11 +764,11 @@ given by uniform-deletion-rate.
         genome2 (:genome parent2)
         p1-points (sort (repeatedly 2 #(lrand-int (inc (count genome1)))))
         p2-points (sort (repeatedly 2 #(lrand-int (inc (count genome2)))))
-        new-genome (vec (concat (take (first p1-points) 
+        new-genome (vec (concat (take (first p1-points)
                                       genome1)
-                                (drop (first p2-points) 
+                                (drop (first p2-points)
                                       (take (second p2-points) genome2))
-                                (drop (second p1-points) 
+                                (drop (second p1-points)
                                       genome1)))]
     (make-individual :genome new-genome
                      :history (:history parent1)
@@ -796,7 +796,7 @@ given by uniform-deletion-rate.
     (let [short-genome (:genome parent1)
           long-genome (:genome parent2)
           short-genome-lengthened (vec (concat short-genome
-                                               (repeat (- (count long-genome) 
+                                               (repeat (- (count long-genome)
                                                           (count short-genome))
                                                        'uniform-padding)))
           new-genome (vec (remove-uniform-padding
@@ -827,15 +827,15 @@ given by uniform-deletion-rate.
                           index 0
                           child-genome []]
                      (if (> (inc index) (count parent-genome))
-                       (if (pos? rate) 
+                       (if (pos? rate)
                          child-genome
                          (reverse child-genome))
                        (recur (if (>= (Math/abs (float rate)) (lrand))
                                 (:genome (select population argmap))
                                 parent-genome)
                               (inc index)
-                              (conj child-genome 
-                                    (nth parent-genome 
+                              (conj child-genome
+                                    (nth parent-genome
                                          (if (pos? rate)
                                            index
                                            (- (count parent-genome) (inc index))))))))]
@@ -857,7 +857,7 @@ given by uniform-deletion-rate.
   with <type>_rand."
   [genome]
   (mapv (fn [instruction-map]
-          (cond 
+          (cond
             (= (:instruction instruction-map) 'autoconstructive_integer_rand)
             (assoc instruction-map :instruction 'integer_rand)
             ;
@@ -876,12 +876,12 @@ given by uniform-deletion-rate.
 on the genome stack and also available via input instructions, and returns
 the resulting top genome."
   ([parent1-genome parent2-genome argmap]
-   (produce-child-genome-by-autoconstruction 
+   (produce-child-genome-by-autoconstruction
      parent1-genome parent1-genome parent2-genome argmap))
   ([genome-to-run parent1-genome parent2-genome argmap]
    (let [parent1-genome (with-meta parent1-genome {})
          parent2-genome (with-meta parent2-genome {})
-         run-result (let [program-to-run 
+         run-result (let [program-to-run
                           (translate-plush-genome-to-push-program
                             {:genome
                              (process-genome-for-autoconstruction genome-to-run)}
@@ -927,7 +927,7 @@ programs encoded by genomes g1 and g2."
 (defn gecco2016-diversifying?
   [ind argmap]
   (let [g (:genome ind)
-        delta #(expressed-difference 
+        delta #(expressed-difference
                  g
                  (produce-child-genome-by-autoconstruction g g argmap)
                  argmap)
@@ -939,7 +939,7 @@ programs encoded by genomes g1 and g2."
 (defn gecco2016-plus1-diversifying?
   [ind argmap]
   (let [g (:genome ind)
-        delta #(expressed-difference 
+        delta #(expressed-difference
                  g
                  (produce-child-genome-by-autoconstruction g g argmap)
                  argmap)
@@ -951,7 +951,7 @@ programs encoded by genomes g1 and g2."
 (defn gecco2016-plus2-diversifying?
   [ind argmap]
   (let [g (:genome ind)
-        delta #(expressed-difference 
+        delta #(expressed-difference
                  g
                  (produce-child-genome-by-autoconstruction g g argmap)
                  argmap)
@@ -964,11 +964,11 @@ programs encoded by genomes g1 and g2."
   [ind argmap]
   (let [g (:genome ind)]
     (assoc ind :diversifying
-      (not= (translate-plush-genome-to-push-program 
-              {:genome g} 
+      (not= (translate-plush-genome-to-push-program
+              {:genome g}
               argmap)
-            (translate-plush-genome-to-push-program 
-              {:genome (produce-child-genome-by-autoconstruction g g argmap)} 
+            (translate-plush-genome-to-push-program
+              {:genome (produce-child-genome-by-autoconstruction g g argmap)}
               argmap)))))
 
 (defn doesnt-clone-genetically-diversifying?
@@ -982,12 +982,12 @@ programs encoded by genomes g1 and g2."
   (let [g (:genome ind)]
     (let [child-genome (produce-child-genome-by-autoconstruction g g argmap)]
       (assoc ind :diversifying
-        (not= (translate-plush-genome-to-push-program 
-                {:genome child-genome} 
+        (not= (translate-plush-genome-to-push-program
+                {:genome child-genome}
                 argmap)
-              (translate-plush-genome-to-push-program 
-                {:genome (produce-child-genome-by-autoconstruction 
-                           child-genome child-genome argmap)} 
+              (translate-plush-genome-to-push-program
+                {:genome (produce-child-genome-by-autoconstruction
+                           child-genome child-genome argmap)}
                 argmap))))))
 
 (defn not-a-clone-diversifying?
@@ -1182,7 +1182,7 @@ programs encoded by genomes g1 and g2."
   [ind argmap]
   (let [g (:genome ind)
         numkids (:autoconstructive-si-children argmap)
-        kids (repeatedly numkids 
+        kids (repeatedly numkids
                          #(produce-child-genome-by-autoconstruction g g argmap))
         kid-counts (map count kids)
         instruction-set (fn [genome]
@@ -1198,7 +1198,7 @@ programs encoded by genomes g1 and g2."
   [ind argmap]
   (let [g (:genome ind)
         numkids (:autoconstructive-si-children argmap)
-        kids (repeatedly numkids 
+        kids (repeatedly numkids
                          #(produce-child-genome-by-autoconstruction g g argmap))
         kid-counts (map count kids)
         instruction-set (fn [genome]
@@ -1212,7 +1212,7 @@ programs encoded by genomes g1 and g2."
   [ind argmap]
   (let [g (:genome ind)
         numkids (:autoconstructive-si-children argmap)
-        kids (repeatedly numkids 
+        kids (repeatedly numkids
                          #(produce-child-genome-by-autoconstruction g g argmap))
         kid-counts (map count kids)]
     (assoc ind :diversifying
@@ -1255,16 +1255,16 @@ programs encoded by genomes g1 and g2."
         num-children (:autoconstructive-diffmeans-children argmap)
         make-child #(produce-child-genome-by-autoconstruction % % argmap)
         c1 (make-child g)
-        diffs1 (vec (repeatedly 
-                      num-children 
+        diffs1 (vec (repeatedly
+                      num-children
                       #(expressed-difference c1 (make-child c1) argmap)))]
     (assoc ind :diversifying
       (if (or (some #{0} diffs1)
               (apply = diffs1))
         false
         (let [c2 (make-child g)
-              diffs2 (vec (repeatedly 
-                            num-children 
+              diffs2 (vec (repeatedly
+                            num-children
                             #(expressed-difference c2 (make-child c2) argmap)))]
           (if (or (some #{0} diffs2)
                   (apply = diffs2)
@@ -1311,7 +1311,7 @@ programs encoded by genomes g1 and g2."
 
 (defn symbolic-makes-children-differently-diversifying?
   [ind argmap]
-  (let [symbolic-made-by #(filter (comp not number?) 
+  (let [symbolic-made-by #(filter (comp not number?)
                                   (flatten (:made-by (meta %))))
         g (:genome ind)
         child1 (produce-child-genome-by-autoconstruction g g argmap)
@@ -1331,7 +1331,7 @@ programs encoded by genomes g1 and g2."
 
 (defn symbolic-makes-three-children-differently-diversifying?
   [ind argmap]
-  (let [symbolic-made-by #(filter (comp not number?) 
+  (let [symbolic-made-by #(filter (comp not number?)
                                   (flatten (:made-by (meta %))))
         g (:genome ind)
         child1 (produce-child-genome-by-autoconstruction g g argmap)
@@ -1353,7 +1353,7 @@ programs encoded by genomes g1 and g2."
 
 (defn symbolic-children-make-children-differently-diversifying?
   [ind argmap]
-  (let [symbolic-made-by #(filter (comp not number?) 
+  (let [symbolic-made-by #(filter (comp not number?)
                                   (flatten (:made-by (meta %))))
         g (:genome ind)
         child1 (produce-child-genome-by-autoconstruction g g argmap)
@@ -1378,7 +1378,7 @@ programs encoded by genomes g1 and g2."
 
 (defn symbolic-three-children-make-children-differently-diversifying?
   [ind argmap]
-  (let [symbolic-made-by #(filter (comp not number?) 
+  (let [symbolic-made-by #(filter (comp not number?)
                                   (flatten (:made-by (meta %))))
         g (:genome ind)
         child1 (produce-child-genome-by-autoconstruction g g argmap)
@@ -1400,7 +1400,7 @@ programs encoded by genomes g1 and g2."
         ggc (produce-child-genome-by-autoconstruction gc g g argmap)
         ggc-made-by (flatten (:made-by (meta ggc)))]
     (assoc ind :diversifying
-      (distinct? 1 
+      (distinct? 1
                  (sequence-similarity c-made-by gc-made-by)
                  (sequence-similarity gc-made-by ggc-made-by)))))
 
@@ -1415,7 +1415,7 @@ programs encoded by genomes g1 and g2."
         ggc (produce-child-genome-by-autoconstruction gc g g argmap)
         ggc-made-by (symbolic (flatten (:made-by (meta ggc))))]
     (assoc ind :diversifying
-      (distinct? 1 
+      (distinct? 1
                  (sequence-similarity c-made-by gc-made-by)
                  (sequence-similarity gc-made-by ggc-made-by)))))
 
@@ -1588,7 +1588,7 @@ programs encoded by genomes g1 and g2."
   (let [child-instructions (set (map :instruction (:genome ind)))
         parent-instructions (set (map :instruction
                                       (concat parent1-genome parent2-genome)))]
-    (assoc ind :diversifying 
+    (assoc ind :diversifying
       (not (empty? (clojure.set/difference child-instructions parent-instructions))))))
 
 (defn lost-instruction-diversifying?
@@ -1597,13 +1597,13 @@ programs encoded by genomes g1 and g2."
         child-instructions (set (map :instruction (:genome ind)))
         parent1-instructions (set (map :instruction parent1-genome))
         parent2-instructions (set (map :instruction parent2-genome))]
-    (assoc ind :diversifying 
+    (assoc ind :diversifying
       (and (not (empty? (set-diff parent1-instructions child-instructions)))
            (not (empty? (set-diff parent2-instructions child-instructions)))))))
 
 (defn different-instructions-diversifying?
   [ind {:keys [parent1-genome parent2-genome] :as argmap}]
-  (assoc ind :diversifying 
+  (assoc ind :diversifying
     (and (not= (set (map :instruction (:genome ind)))
                (set (map :instruction parent1-genome)))
          (not= (set (map :instruction (:genome ind)))
@@ -1711,10 +1711,10 @@ programs encoded by genomes g1 and g2."
   "Returns a genome for a child produced either by autoconstruction (executing parent1
   with both parents on top of the genome stack and also available via input instructions)
   or by cloning. In either case if the child is not diversifying then a random
-  genome is returned instead IF that is itself diversifying; if it isn't then an empty 
+  genome is returned instead IF that is itself diversifying; if it isn't then an empty
   genome is returned. The construct/clone ration is hardcoded here, but might
   be set globally or eliminated in the future."
-  [parent1 parent2 {:keys [maintain-ancestors atom-generators max-genome-size-in-initial-program 
+  [parent1 parent2 {:keys [maintain-ancestors atom-generators max-genome-size-in-initial-program
                            autoconstructive-clone-probability autoconstructive-decay
                            autoconstructive-parent-decay autoconstructive-clone-decay]
                     :as argmap}]
@@ -1727,7 +1727,7 @@ programs encoded by genomes g1 and g2."
         clone (<= (lrand) autoconstructive-clone-probability)
         pre-decay-child-genome (if clone
                                    parent1-genome
-                                   (produce-child-genome-by-autoconstruction 
+                                   (produce-child-genome-by-autoconstruction
                                      parent1-genome parent2-genome argmap))
         child-genome (if (and clone (not= autoconstructive-clone-decay :same))
                        (decay pre-decay-child-genome autoconstructive-clone-decay)
@@ -1752,7 +1752,7 @@ programs encoded by genomes g1 and g2."
         :parent2-genome parent2-genome
         :parent1-errors (:errors parent1)
         :parent2-errors (:errors parent2))
-      (let [new-genome (random-plush-genome 
+      (let [new-genome (random-plush-genome
                          max-genome-size-in-initial-program atom-generators argmap)
             new-checked (diversifying? {:genome new-genome} argmap)]
         (if (:diversifying new-checked)
@@ -1770,4 +1770,3 @@ programs encoded by genomes g1 and g2."
                            :grain-size (compute-grain-size [] argmap)
                            :ancestors ()
                            :is-random-replacement true))))))
-
