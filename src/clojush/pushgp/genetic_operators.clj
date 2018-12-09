@@ -1641,10 +1641,26 @@ programs encoded by genomes g1 and g2."
                  (= (:instruction instruction-map) 'genome_genesis)))
           (:genome ind))))
 
+(defn none-diversifying? [ind argmap] ind)
+
+(defn append-to-key
+    "Takes in a keyword and returns a string of the form keywordsuffix"
+    [keyword suffix]
+    (str (name keyword) suffix))
+
+(defn key-to-fn
+    "Takes in a keyword and returns a function of the form keywordsuffix"
+    [keyword suffix]
+    (->  keyword
+         (append-to-key suffix)
+         (symbol)
+         (resolve)))
+
 (defn diversifying?
   "Returns ind with :diversifying set to true if it staisfies all test
   specified in (:autoconstructive-diversification-test argmap), or false
-  otherwise."
+  otherwise.
+  -diversifying? is the suffix on all boolean(ish) functions in this namespace"
   [ind argmap]
   (loop [i (assoc ind :diversifying true)
          tests (let [raw-tests (:autoconstructive-diversification-test argmap)]
@@ -1652,60 +1668,9 @@ programs encoded by genomes g1 and g2."
     (if (or (empty? tests)
             (not (:diversifying i)))
       i
-      (recur ((case (first tests)
-                :gecco2016 gecco2016-diversifying?
-                :gecco2016-plus1 gecco2016-plus1-diversifying?
-                :gecco2016-plus2 gecco2016-plus2-diversifying?
-                :three-gens-diff-diffs three-gens-diff-diffs-diversifying?
-                :three-gens-same-inputs-diff-diffs three-gens-same-inputs-diff-diffs-diversifying?
-                :four-gens-same-inputs-diff-diffs four-gens-same-inputs-diff-diffs-diversifying?
-                :two-x-two two-x-two-diversifying?
-                :minimal-two-x-two minimal-two-x-two-diversifying?
-                :two-x-three two-x-three-diversifying?
-                :three-gens-some-diff-diffs three-gens-some-diff-diffs-diversifying?
-                :size-and-instruction size-and-instruction-diversifying?
-                :distinct-size-and-instruction distinct-size-and-instruction-diversifying?
-                :distinct-size distinct-size-diversifying?
-                :three-gens-size-and-instruction three-gens-size-and-instruction-diversifying?
-                :diffmeans diffmeans-diversifying?
-                :minimal-reproductive-difference minimal-reproductive-difference-diversifying?
-                :four-generation-reproductive-difference four-generation-reproductive-difference-diversifying?
-                :makes-children-differently makes-children-differently-diversifying?
-                :symbolic-makes-children-differently symbolic-makes-children-differently-diversifying?
-                :makes-three-children-differently makes-three-children-differently-diversifying?
-                :symbolic-makes-three-children-differently symbolic-makes-three-children-differently-diversifying?
-                :children-make-children-differently children-make-children-differently-diversifying?
-                :symbolic-children-make-children-differently symbolic-children-make-children-differently-diversifying?
-                :three-children-make-children-differently three-children-make-children-differently-diversifying?
-                :symbolic-three-children-make-children-differently symbolic-three-children-make-children-differently-diversifying?
-                :symbolic-reproductive-change-changes symbolic-reproductive-change-changes-diversifying?
-                :symbolic-reproductive-change-changes-differently symbolic-reproductive-change-changes-differently-diversifying?
-                :symbolic-reproductive-change symbolic-reproductive-change-diversifying?
-                :reproductive-change reproductive-change-diversifying?
-                :symbolic-reproductive-divergence symbolic-reproductive-divergence-diversifying?
-                :reproductive-divergence reproductive-divergence-diversifying?
-                :reproductive-change-changes reproductive-change-changes-diversifying?
-                :reproductive-change-changes-differently reproductive-change-changes-differently-diversifying?
-                :use-mate use-mate-diversifying?
-                :use-mate-differently use-mate-differently-diversifying?
-                :si-and-mate-use si-and-mate-use-diversifying?
-                :doesnt-clone doesnt-clone-diversifying?
-                :doesnt-clone-genetically doesnt-clone-genetically-diversifying?
-                :child-doesnt-clone child-doesnt-clone-diversifying?
-                :not-a-clone not-a-clone-diversifying?
-                :minimum-genetic-difference minimum-genetic-difference-diversifying?
-                :different-errors different-errors-diversifying?
-                :new-instruction new-instruction-diversifying?
-                :lost-instruction lost-instruction-diversifying?
-                :different-instructions different-instructions-diversifying?
-                :new-size new-size-diversifying?
-                :checks-autoconstructing checks-autoconstructing-diversifying?
-                :autoconstruction-aware autoconstruction-aware-diversifying?
-                :contains-genesis contains-genesis-diversifying?
-                :none (fn [ind argmap] i))
-              i
-              argmap)
+      (recur ((key-to-fn (first tests) "-diversifying?") i argmap) ;see docstring
              (rest tests)))))
+
 
 (defn autoconstruction
   "Returns a genome for a child produced either by autoconstruction (executing parent1
