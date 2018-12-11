@@ -2,7 +2,9 @@
     (:use midje.sweet)
     (:require [clojush.pushgp.genetic-operators :as go]))
 
-(fact (+ 2 2) => even?)
+;;; To run tests,
+;;  lein midje clojush.pushgp.genetic-operators-test
+;;; in the project directory.
 
 ;;; append-to-key Tests
 (fact
