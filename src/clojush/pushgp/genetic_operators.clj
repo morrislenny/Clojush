@@ -1656,20 +1656,22 @@ programs encoded by genomes g1 and g2."
          (symbol)
          (resolve)))
 
+(defn run-diversification-test
+  "takes in a keyword,
+  calls the boolean(ish) function <keyword>-diversifying? with ind and argmap as arguments,
+  returns result of the boolean(ish) function.
+  -diversifying? is the suffix on all boolean(ish) functions in this namespace"
+  [keyword ind argmap]
+  (key-to-fn keyword "-diversifying?") ind argmap)
+
 (defn diversifying?
   "Returns ind with :diversifying set to true if it staisfies all test
   specified in (:autoconstructive-diversification-test argmap), or false
-  otherwise.
-  -diversifying? is the suffix on all boolean(ish) functions in this namespace"
+  otherwise."
   [ind argmap]
-  (loop [i (assoc ind :diversifying true)
-         tests (let [raw-tests (:autoconstructive-diversification-test argmap)]
-                 (if (coll? raw-tests) raw-tests [raw-tests]))]
-    (if (or (empty? tests)
-            (not (:diversifying i)))
-      i
-      (recur ((key-to-fn (first tests) "-diversifying?") i argmap) ;see docstring
-             (rest tests)))))
+  (let [i (assoc ind :diversifying true)
+        tests (:autoconstructive-diversification-test argmap)]
+    (assoc i :diversifying (every? #(:diversifying (run-diversification-test % i argmap)) tests))))
 
 
 (defn autoconstruction
