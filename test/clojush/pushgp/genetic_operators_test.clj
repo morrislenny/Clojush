@@ -26,15 +26,17 @@
     [ind argmap]
     (assoc ind :diversifying false))
 
-(fact
-    (go/diversifying? {} {:autoconstructive-diversification-test [:fn1 :fn2 :fn3]}) => {:diversifying true}
-      (provided
-        (go/key-to-fn :fn1 "-diversifying?") => alwaysTruthy
-        (go/key-to-fn :fn2 "-diversifying?") => alwaysTruthy
-        (go/key-to-fn :fn3 "-diversifying?") => alwaysTruthy))
+(def argmap {:autoconstructive-diversification-test [:fn1 :fn2 :fn3]})
 
 (fact
-    (go/diversifying? {} {:autoconstructive-diversification-test [:fn1 :fn2 :fn3]}) => {:diversifying false}
+    (go/diversifying? {} argmap) => {:diversifying true}
       (provided
-        (go/key-to-fn :fn1 "-diversifying?") => alwaysTruthy
-        (go/key-to-fn :fn2 "-diversifying?") => alwaysFalsy))
+        (go/run-diversification-test :fn1 {:diversifying true} argmap) => {:diversifying true}
+        (go/run-diversification-test :fn2 {:diversifying true} argmap) => {:diversifying true}
+        (go/run-diversification-test :fn3 {:diversifying true} argmap) => {:diversifying true}))
+
+(fact
+    (go/diversifying? {} argmap) => {:diversifying false}
+      (provided
+        (go/run-diversification-test :fn1 {:diversifying true} argmap) => {:diversifying true}
+        (go/run-diversification-test :fn2 {:diversifying true} argmap) => {:diversifying false}))
