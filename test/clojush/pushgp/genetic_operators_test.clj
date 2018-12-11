@@ -2,7 +2,7 @@
     (:use midje.sweet)
     (:require [clojush.pushgp.genetic-operators :as go]))
 
-;;; To run tests,
+;;; To run the tests,
 ;;  lein midje clojush.pushgp.genetic-operators-test
 ;;; in the project directory.
 
