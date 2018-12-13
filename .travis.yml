@@ -5,7 +5,7 @@ language: clojure
 before_install:
   - yes y | sudo lein upgrade
   - touch ~/.lein/profiles.clj
-  - echo "{:user {:plugins [[lein-midje "3.2.1"]]}}" > ~/.lein/profiles.clj
+  - echo '{:user {:plugins [[lein-midje "3.2.1"]]}}' > ~/.lein/profiles.clj
 
 script:
   # check fails because of "Duplicate Push instruction defined:boolean_and"
