@@ -3,7 +3,7 @@ language: clojure
 
 # https://github.com/technomancy/leiningen/issues/2014#issuecomment-153829977
 before_install:
-  - lein downgrade 2.6.1
+  - yes y |lein downgrade 2.6.1
   - echo '{:user {:plugins [[lein-midje "3.2.1"]]}}' > ~/.lein/profiles.clj
 
 script:
