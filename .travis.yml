@@ -2,12 +2,14 @@ sudo: true
 language: clojure
 
 # https://github.com/technomancy/leiningen/issues/2014#issuecomment-153829977
-before_install: yes y | sudo lein upgrade
+before_install:
+  - yes y |lein downgrade 2.6.1
+  - echo '{:user {:plugins [[lein-midje "3.2.1"]]}}' > ~/.lein/profiles.clj
 
 script:
   # check fails because of "Duplicate Push instruction defined:boolean_and"
   # - lein check
-  - echo
+  - lein midje clojush.pushgp.genetic-operators-test
 after_success:
   - ./scripts/coveralls.sh
   - ./scripts/after_success.sh 2>&1 | sed "s/$GITHUB_TOKEN/<hidden github token>/"

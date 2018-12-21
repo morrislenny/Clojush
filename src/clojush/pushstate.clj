@@ -113,8 +113,8 @@
                (if (:popper (first old-return))
                  (pop-item (:type (first old-return))
                            new-state)
-                 (push-item (:item (first old-return)) 
-                            (:type (first old-return)) 
+                 (push-item (:item (first old-return))
+                            (:type (first old-return))
                             new-state)))))))
 
 (defn registered-for-type
@@ -150,4 +150,3 @@
    with those stacks set."
   [& {:as stack-assignments}]
   (merge (make-push-state) stack-assignments))
-
